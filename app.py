@@ -10,7 +10,7 @@ db = SQLAlchemy(app)
 login_manager = LoginManager(app)
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
-# app.secret_key = 'My secret'
+app.secret_key = 'My secret'
 
 class User(UserMixin, db.Model):
     __tablename__ = 'users'
@@ -54,6 +54,8 @@ def root():
 
 @app.route('/register', methods=['POST', 'GET'])
 def register():
+    if current_user.is_authenticated:
+      return redirect(url_for('root'))
     if request.method == 'POST':  # By default (GET REQUEST), python will skip this condition and just return render_template at the end of this function. But If the user submit the form, this line will be checked
         check_email = User.query.filter_by(email=request.form['email']).first() # we use the email that user provides and check if that email is taken or not
         if check_email:  #if email taken
@@ -75,6 +77,8 @@ def register():
 
 @app.route('/login', methods=['POST', 'GET'])
 def login():
+    if current_user.is_authenticated:
+      return redirect(url_for('root'))
     if request.method == 'POST':
         user = User.query.filter_by(email=request.form['email']).first()
         if not user:
@@ -82,11 +86,21 @@ def login():
             return redirect(url_for('register'))
         if user.check_password(request.form['password']):
             login_user(user)
-            flash(f'Welcome back {current_user.name!}', 'success')
+            flash('Welcome back {current_user.name!}', 'success')
             return redirect(url_for('root'))
         flash('wrong password or email', 'warning')
         return redirect(url_for('login'))
     return render_template('views/login.html')    
+
+
+
+@app.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    return redirect(url_for('login'))
+
+
 
 
 if __name__ == "__main__":
