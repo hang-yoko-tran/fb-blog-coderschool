@@ -1,5 +1,37 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<h1>index</h1>
-{% endblock %}
+<div class='container'>
+  <div class='create-post-div'>
+    <form method='POST' class='create-post-form' action={{url_for('create_post')}}>
+      <textarea class='create-post-input' name='body' rows="5" autofocus
+        value="what's on your mind, {{ current_user.name}}?">
+      </textarea>
+      <div style="width:100%; display:flex; justify-content:flex-end ">
+        <button class='btn btn-primary' type='submit'>Post</button>
+      </div>
+    </form>
+  </div>
+
+  <div class='posts-container'>
+    {% for post in posts %}
+    <div class='single-post-container'>
+      <h5 class="post-owner">{{post.author.name}}</h5>
+      <small style="font-style: italic; font-weight: 200;">{{post.created_at}}</small>
+      <pre>{{post.body | safe}}</pre>
+      <div class='single-post-footer'>
+        {% if post.author.id == current_user.id %}
+        <form method="POST" action="{{url_for('single_post', id=post.id, action='edit')}}">
+          <button class='btn btn-link'>Edit</button>
+        </form>
+        <form method="POST" action="{{url_for('single_post', id=post.id, action='delete')}}">
+            <button class='btn btn-link'>Delete</button>
+        </form>
+        {% else %}
+
+        {% endif %}
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div> {% endblock %}

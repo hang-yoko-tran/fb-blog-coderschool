@@ -47,8 +47,14 @@ login_manager.login_view='login'
 db.create_all()
 
 @app.route('/')
+@login_required
 def root():
-  return render_template('views/index.html')
+    # query posts from database
+    posts = Post.query.all()
+    # modify our posts so that each post will include all author info:
+    for post in posts:
+      post.author = User.query.filter_by(id=post.user_id).first()
+    return render_template('views/index.html', posts=posts)
 
 
 
@@ -99,6 +105,47 @@ def login():
 def logout():
     logout_user()
     return redirect(url_for('login'))
+
+
+
+@app.route('/posts', methods=['POST'])
+@login_required
+def create_post():
+if request.method=='POST':
+new_post = Post(body=request.form['body'],
+                user_id=current_user.id)
+db.session.add(new_post)
+db.session.commit()
+return redirect(url_for('root'))    
+
+
+
+@app.route('/posts/<id>', methods=['POST', 'GET'])
+def single_post(id):
+  action = request.args.get('action')
+  print(action)
+  post = Post.query.get(id)
+  if not post:
+    flash('Post not found', 'warning')
+    return redirect(url_for('root'))
+  post.author = User.query.get(post.user_id)
+  if request.method=="POST":
+    if post.user_id != current_user.id:
+      flash('not allow to do this', 'danger')
+      return redirect(url_for('root'))
+    if action == 'delete':
+      db.session.delete(post)
+      db.session.commit()
+      return redirect(url_for('root'))
+    elif action == 'udpate':
+      post.body = request.form['body']
+      db.session.commit()
+      return redirect(url_for('single_post',id=id))
+    elif action == 'edit':
+      return render_template('views/single_post.html', post = post, action=action)
+  if not action:
+    action = 'view'    
+  return render_template('views/single_post.html', post = post, action=action)
 
 
 
