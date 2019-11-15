@@ -14,9 +14,11 @@
                         Comment panel
                     </div>
                     <div class="panel-body">
-                        <textarea class="form-control" placeholder="write a comment..." rows="3"></textarea>
+                        <form method='POST' class='create-post-form' action="{{url_for('create_comment', id=post.id)}}">
+                        <textarea name="body" class="form-control" placeholder="write a comment..." rows="3"></textarea>
                         <br>
-                        <button type="button" class="btn btn-info pull-right">Post</button>
+                        <button type="submit" class="btn btn-info pull-right">Post</button>
+                        </form>
                         <div class="clearfix"></div>
                         <hr>
                         <ul class="media-list">
