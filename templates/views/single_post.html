@@ -8,15 +8,25 @@
 
   {% if action == "view" %}
   <div>
-    Comments here
+      <form method='POST' class='create-post-form' action="{{url_for('create_comment', id=post.id)}}">
+          <textarea class='create-post-input' name='body' rows="5" autofocus
+            value="Say something...">
+          </textarea>
+          <div class="btn-post">
+            <button class='btn btn-primary' type='submit'>Comment</button>
+          </div>
+      </form>
+      {% include 'views/_comment.html' %}
+ 
   </div>
   {% else %}
   <div class='create-post-div'>
     <form method='POST' class='create-post-form' action="{{url_for('single_post', id=post.id, action="update")}}">
+      <h4>what's on your mind?</h4>
       <textarea class='create-post-input' name='body' rows="5" autofocus
         value="what's on your mind, {{ current_user.name}}?">
       </textarea>
-      <div style="width:100%; display:flex; justify-content:flex-end">
+      <div class="btn-post">
         <button class='btn btn-primary' type='submit'>Post</button>
       </div>
     </form>
@@ -24,5 +34,5 @@
   {% endif %}
 </div>
 {% endblock %}
-@hang-yoko-tran
+<!-- @hang-yoko-tran -->
  

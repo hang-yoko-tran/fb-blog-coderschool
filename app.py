@@ -2,12 +2,14 @@ from flask import Flask, render_template, request, flash, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin, LoginManager, login_required, login_user, logout_user, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
+from flask_moment import Moment
 
 
 app = Flask(__name__)
 
 db = SQLAlchemy(app)
 login_manager = LoginManager(app)
+moment = Moment(app)
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
 app.secret_key = 'My secret'
@@ -37,6 +39,20 @@ class Post(db.Model):
         db.DateTime, server_default=db.func.now(), server_onupdate=db.func.now())
 
 
+class Comment(db.Model):
+    __tablename__ = 'comments'
+    id = db.Column(db.Integer, primary_key=True)
+    body = db.Column(db.String, nullable=False)
+    user_id = db.Column(db.Integer, nullable=False)
+    post_id = db.Column(db.Integer, nullable=False)
+    created_at = db.Column(db.DateTime, server_default=db.func.now())
+    updated_at = db.Column(
+        db.DateTime, server_default=db.func.now(), server_onupdate=db.func.now())
+
+
+db.create_all()
+
+
 @login_manager.user_loader
 def load_user(id):
     return User.query.get(id)
@@ -45,14 +61,11 @@ def load_user(id):
 login_manager.login_view = 'login'
 
 
-db.create_all()
-
-
 @app.route('/')
 @login_required
 def root():
     # query posts from database
-    posts = Post.query.all()
+    posts = Post.query.order_by(Post.created_at.desc()).all()
     # modify our posts so that each post will include all author info:
     for post in posts:
         post.author = User.query.filter_by(id=post.user_id).first()
@@ -96,7 +109,7 @@ def login():
             return redirect(url_for('register'))
         if user.check_password(request.form['password']):
             login_user(user)
-            flash('Welcome back {current_user.name!}', 'success')
+            flash(f'Welcome back {current_user.name} !', 'success')
             return redirect(url_for('root'))
         flash('wrong password or email', 'warning')
         return redirect(url_for('login'))
@@ -115,7 +128,7 @@ def logout():
 def create_post():
     if request.method == 'POST':
         new_post = Post(body=request.form['body'],
-                    user_id=current_user.id)
+                        user_id=current_user.id)
         db.session.add(new_post)
         db.session.commit()
     return redirect(url_for('root'))
@@ -124,8 +137,8 @@ def create_post():
 @app.route('/posts/<id>', methods=['POST', 'GET'])
 def single_post(id):
     action = request.args.get('action')
-    print(action)
     post = Post.query.get(id)
+    comments = Comment.query.filter_by(post_id=id).all()
     if not post:
         flash('Post not found', 'warning')
         return redirect(url_for('root'))
@@ -138,15 +151,29 @@ def single_post(id):
             db.session.delete(post)
             db.session.commit()
             return redirect(url_for('root'))
-        elif action == 'udpate':
+        elif action == 'update':
             post.body = request.form['body']
             db.session.commit()
             return redirect(url_for('single_post', id=id))
         elif action == 'edit':
             return render_template('views/single_post.html', post=post, action=action)
     if not action:
-        action = 'view'
-    return render_template('views/single_post.html', post=post, action=action)
+        action = 'view' 
+
+    for comment in comments:
+        # import code; code.interact(local=dict(globals(), **locals()))
+        comment.user_name = User.query.get(comment.user_id).name
+    return render_template('views/single_post.html', post=post, action=action, comments=comments)
+
+
+@app.route('/posts/<id>/comments', methods=['POST', 'GET'])
+def create_comment(id):
+    comment = Comment(user_id=current_user.id, post_id=id,
+                      body=request.form['body'])
+    db.session.add(comment)
+    db.session.commit()
+    flash('Thanks for your comment', 'success')
+    return redirect(url_for('single_post', id=id, action='view'))
 
 
 if __name__ == "__main__":
