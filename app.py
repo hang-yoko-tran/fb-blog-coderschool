@@ -175,6 +175,26 @@ def create_comment(id):
     flash('Thanks for your comment', 'success')
     return redirect(url_for('single_post', id=id, action='view'))
 
+@app.route('/posts/<id>/comments/<comment_id>', methods=['POST', 'GET'])
+def edit_comment(id, comment_id):
+    action = request.args.get('action')
+    comment = Comment.query.get(comment_id)
+    print('ACTION', action)
+    print("Method", request.method)
+    if request.method == 'POST':
+        if comment.user_id != current_user.id:
+            flash('not allow to do this', 'danger')
+            return redirect(url_for('root'))
+        if action == 'edit':
+            comment.body = request.form['body']
+            db.session.commit()
+            return redirect(url_for('single_post', id= id, action='view'))
+        if action == 'delete':
+            print('deleting...')
+            db.session.delete(comment)
+            db.session.commit()
+            return redirect(url_for('single_post', id = comment.post_id))
+    return render_template('edit_comment.html', comment = comment)
 
 if __name__ == "__main__":
     app.run(debug=True)

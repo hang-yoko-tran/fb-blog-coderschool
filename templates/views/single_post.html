@@ -8,15 +8,7 @@
 
   {% if action == "view" %}
   <div>
-      <!-- <form method='POST' class='create-post-form' action="{{url_for('create_comment', id=post.id)}}">
-          <textarea class='create-post-input' name='body' rows="5" autofocus
-            value="Say something...">
-          </textarea>
-          <div class="btn-post">
-            <button class='btn btn-primary' type='submit'>Comment</button>
-          </div>
-      </form> -->
-      {% include 'views/_comment.html' %}
+      {% include 'views/comments.html' %}
  
   </div>
   {% else %}
