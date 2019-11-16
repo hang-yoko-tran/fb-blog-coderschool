@@ -186,6 +186,7 @@ def edit_comment(id, comment_id):
             flash('not allow to do this', 'danger')
             return redirect(url_for('root'))
         if action == 'edit':
+            print("edit comment")
             comment.body = request.form['body']
             db.session.commit()
             return redirect(url_for('single_post', id= id, action='view'))

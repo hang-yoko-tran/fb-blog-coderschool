@@ -2,7 +2,7 @@
 
 {% block content %}
     <h1>Edit Comment</h1>
-    <form action="{{url_for('edit_comment', id = comment.post_id, comment_id = comment.id)}}" method="post">
+    <form action="{{url_for('edit_comment', id = comment.post_id, comment_id = comment.id, action='edit')}}" method="post">
         <input type="text" name="body">
         <button type="submit">Edit</button>
     </form>
