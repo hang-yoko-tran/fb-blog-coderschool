@@ -13,13 +13,14 @@
   </div>
   {% else %}
   <div class='create-post-div'>
+    <h1>dsada</h1>
     <form method='POST' class='create-post-form' action="{{url_for('single_post', id=post.id, action="update")}}">
       <h4>what's on your mind?</h4>
       <textarea class='create-post-input' name='body' rows="5" autofocus
         value="what's on your mind, {{ current_user.name}}?">
       </textarea>
-      <div class="btn-post">
-        <button class='btn btn-primary' type='submit'>Post</button>
+      <div>
+        <button class='btn btn-primary btn-post' type='submit'>Post</button>
       </div>
     </form>
   </div>

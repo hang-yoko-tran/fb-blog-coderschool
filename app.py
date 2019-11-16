@@ -5,6 +5,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from flask_moment import Moment
 
 
+
 app = Flask(__name__)
 
 db = SQLAlchemy(app)

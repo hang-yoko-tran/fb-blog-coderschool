@@ -1,8 +1,11 @@
 {% extends 'base.html' %}
 
 {% block content %}
+
+<div class="signup-bcg container"></div>
 <div class='login-form col-3 container'>
   <form method="POST">
+    <div class="signup-section">
     <div class="form-group">
       <label for="exampleInputEmail1">Your name:</label>
       <input type="text" name='name' class="form-control" id="formGroupExampleInput" placeholder="your name">
@@ -15,7 +18,8 @@
       <label for="exampleInputPassword1">Password</label>
       <input type="password" name='password' class="form-control" id="exampleInputPassword1" placeholder="Password">
     </div>
-    <button type="submit" class="btn btn-primary">Submit</button>
+    <button type="submit" class="btn btn-primary btn-signup">Submit</button>
+    </div>
   </form>
 </div>
 {% endblock %}

@@ -2,41 +2,60 @@
 
 {% block content %}
 <div class='container'>
-  <div class='create-post-div'>
+  <!-- <div class='create-post-div form-group'>
     <form method='POST' class='create-post-form' action={{url_for('create_post')}}>
-      <textarea class='create-post-input' name='body' rows="5" autofocus
-        value="what's on your mind, {{ current_user.name}}?">
-      </textarea>
-      <div style="width:100%; display:flex; justify-content:flex-end ">
-        <button class='btn btn-primary' type='submit'>Post</button>
+      <textarea class=' form-control create-post-input' name='body' id="exampleFormControlTextarea1" rows="4" col="12" autofocus value="what's on your mind, {{ current_user.name}}?"></textarea>
+      <div style="width:100%; display:flex; justify-content:center ">
+        <button class='btn btn-primary btn-post' type='submit'>Post</button>
       </div>
     </form>
+  </div> -->
+  <div class="form-group post-section">
+      <form method='POST' class='create-post-form' action={{url_for('create_post')}}>
+      <label for="exampleFormControlTextarea1">Share your thought:</label>
+      <textarea class="form-control form-post-area" id="exampleFormControlTextarea1" name='body'" rows="3" autofocus placeholder="what's on your mind {{ current_user.name }} ?"></textarea>
+      <div style="width:100%; display:flex; justify-content:center ">
+          <button class='btn btn-primary btn-post' type='submit'>Post</button>
+      </div>
+      </form>
   </div>
-
   <div class='posts-container'>
-    <h1>posts</h1>
-    <hr />
-    <hr />
-    <hr />
-    <hr />
+    <!-- <hr class="line-post"/> -->
+    <h2 class="title-post"><i class="fas fa-cat"></i>    Posts</h2>
+    <!-- <hr class="line-post"/> -->
     {% for post in posts %}
-    <div class='single-post-container'>
-      <h5 class="post-owner">{{post.author.name}}</h5>
-      <small style="font-style: italic; font-weight: 200;">{{moment(post.created_at).fromNow()}}</small>
+    <div class='single-post-container' >
+        <div class="name-time-post-area">
+            <div>
+                <h5 class="post-owner">{{post.author.name}}</h5>
+            </div>
+            <div class="time-post">
+                <small class="time-post">{{moment(post.created_at).fromNow()}}</small>
+            </div>
+        </div>
+        
       <!-- <pre>{{post.body | safe}}</pre> -->
-      <a href="{{url_for('single_post', id=post.id, action='view')}}"><pre>{{post.body | safe}}</pre></a>
+      <p><pre class="body-post">{{post.body | safe}}</pre></>
       <div class='single-post-footer'>
         {% if post.author.id == current_user.id %}
-        <form method="POST" action="{{url_for('single_post', id=post.id, action='edit')}}">
-          <button class='btn btn-link'>Edit</button>
-        </form>
-        <form method="POST" action="{{url_for('single_post', id=post.id, action='delete')}}">
-            <button class='btn btn-link'>Delete</button>
-        </form>
+        <div class="view-post-btn">
+            <a href="{{url_for('single_post', id=post.id, action='view')}}">View This Post <i class="fas fa-eye"></i></a>
+        </div>
+        <div class="edit-delete-area">
+            <div>
+                <form method="POST" action="{{url_for('single_post', id=post.id, action='edit')}}">
+                    <button class='btn btn-link'>Edit <i class="fas fa-edit"></i></>
+                </form>
+            </div>
+            <div>
+                <form method="POST" action="{{url_for('single_post', id=post.id, action='delete')}}">
+                    <button class='btn btn-link'>Delete <i class="fas fa-trash"></i></button>
+                </form>
+            </div>
+        </div>
         {% else %}
       
         {% endif %}
-        <hr>
 
       </div>
     </div>
