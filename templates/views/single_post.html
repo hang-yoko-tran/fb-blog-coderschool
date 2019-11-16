@@ -1,25 +1,35 @@
+
+
 {% extends 'base.html' %}
 
+
+
 {% block content %}
-<div class='container'>
-  <h2>{{post.author.name}}</h2>
-  <small>{{post.created_at}}</small>
-  <pre>{{post.body}}</pre>
+
+<div class='view-area container '>
+  <div class="single-post-container">
+    <div class="name-time-post-area">
+      <h3 class="post-owner">{{post.author.name}}</h3>
+      <small class="time-post">{{post.created_at}}</small>
+    </div>
+    <pre class="body-post-single-post">{{post.body}}</pre>
+  </div>
 
   {% if action == "view" %}
+  
   <div>
       {% include 'views/comments.html' %}
- 
   </div>
   {% else %}
   <div class='create-post-div'>
-    <h1>dsada</h1>
+
     <form method='POST' class='create-post-form' action="{{url_for('single_post', id=post.id, action="update")}}">
-      <h4>what's on your mind?</h4>
-      <textarea class='create-post-input' name='body' rows="5" autofocus
-        value="what's on your mind, {{ current_user.name}}?">
-      </textarea>
-      <div>
+      <h4>Edit your post</h4>
+      <!-- <textarea class='form-edit-body-area' id="exampleFormControlTextarea1" name='body' rows="5" col='12' autofocus placeholder="What's on your mind, {{ current_user.name}}?"> -->
+      <!-- </textarea> -->
+      <textarea class="create-post-input form-control form-post-area" id="exampleFormControlTextarea1" name='body'" rows="3" col="12" autofocus placeholder="What's on your mind {{ current_user.name }} ?"></textarea>
+      <div style="width:100%; display:flex; justify-content:center ">
+      <div style="width:100%; display:flex; justify-content:center ">
         <button class='btn btn-primary btn-post' type='submit'>Post</button>
       </div>
     </form>
@@ -27,5 +37,4 @@
   {% endif %}
 </div>
 {% endblock %}
-<!-- @hang-yoko-tran -->
- 
+

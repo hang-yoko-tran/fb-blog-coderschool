@@ -1,39 +1,58 @@
-<div class="row bootstrap snippets">
-        <div class="col-md-6 col-md-offset-2 col-sm-12">
+
+
+
+<div class=" container view-area">
+        <div class="col-md-12 col-md-offset-2 container">
             <div class="comment-wrapper">
                 <div class="panel panel-info">
                     <div class="panel-heading">
-                        Comment panel
+                        <h4 class="comment-title">Comments</h4>
                     </div>
-                    <div class="panel-body">
+                    <div>
                         <form method='POST' class='create-post-form' action="{{url_for('create_comment', id=post.id)}}">
-                        <textarea name="body" class="form-control" placeholder="write a comment..." rows="3"></textarea>
+                        <textarea name="body" class="form-control form-post-area" id="exampleFormControlTextarea1" placeholder="Write a comment..." rows="3"></textarea>
                         <br>
-                        <button type="submit" class="btn btn-info pull-right">Post</button>
+                        <div style="width:100%; display:flex; justify-content:center">
+                        <button type="submit" class="btn btn-post-comment">Post</button>
+                        </div>
                         </form>
                         <div class="clearfix"></div>
-                        <hr>
+
                         <ul class="media-list">
                             {% for comment in comments %}
-                            <li class="media">
-                                <a href="#" class="pull-left">
-                                    <img src="https://bootdey.com/img/Content/user_1.jpg" alt="" class="img-circle">
+                            <!-- <div class="comment-bcg"></div> -->
+                            <li class="media container col-md-12 ">
+                  
+                                <a href="#">
+                                    <img src="https://s6.upanh.pro/2019/11/16/profile.png" alt="" class="img-circle">
                                 </a>
                                 <div class="media-body">
-                                    <span class="text-muted pull-right"></span>
+                                    <div class="single-post-footer">
+                                    <div>
+                                        <strong class="comment-user-name">{{comment.user_name}}</strong>
+                                    </div>
+                                    <div>
                                         <small class="text-muted">{{comment.created_at}}</small>
-                                    </span>
-                                    <strong class="text-success">{{comment.user_name}}</strong>
+                                    </div>
+                                    </div>
                                     <p>{{comment.body}}</p>
+                                    <div class="single-post-footer">
+                                    <div>
                                     <form method="POST" action="{{url_for('edit_comment', id= comment.post_id, comment_id = comment.id, action='edit')}}">
-                                        <a href="{{url_for('edit_comment', id= comment.post_id, comment_id = comment.id, action='edit')}}">Edit</a>
-                                        <button type="submit">Edit</button>
+                                        <a href="{{url_for('edit_comment', id= comment.post_id, comment_id = comment.id, action='edit')}}">Edit <i class="fas fa-edit"></i></a>
                                     </form>
-                                    
+                                    </div>
+                                    <div>
                                     <form method="POST" action="{{url_for('edit_comment', id= comment.post_id, comment_id = comment.id, action='delete')}}">
-                                        <button type="submit">Delete</button>
+                                        <button class='btn btn-link' type="submit">Delete <i class="fas fa-trash"></i></button>
                                     </form>
+                                    </div>
+                                    </div>
+
                                 </div>
+                               
+                                </li>
+                                <hr />
                             </li>
                             {% endfor %}
                         </ul>
@@ -42,3 +61,4 @@
             </div>
         </div>
     </div>
+
