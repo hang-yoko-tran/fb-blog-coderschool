@@ -3,12 +3,12 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin, LoginManager, login_required, login_user, logout_user, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_moment import Moment
-
-
+from flask_migrate import Migrate
 
 app = Flask(__name__)
 
 db = SQLAlchemy(app)
+migrate = Migrate(app, db)
 login_manager = LoginManager(app)
 moment = Moment(app)
 
@@ -22,6 +22,8 @@ class User(UserMixin, db.Model):
     name = db.Column(db.String(20), nullable=False, unique=True)
     email = db.Column(db.String(50), nullable=False, unique=True)
     password = db.Column(db.String(255), nullable=False)
+    posts = db.relationship('Post', backref="users", lazy=True)
+    likes_posts = db.relationship('Post', secondary="likes", backref="who_liked_me", lazy=True)
 
     def generate_password(self, password):
         self.password = generate_password_hash(password)
@@ -34,10 +36,16 @@ class Post(db.Model):
     __tablename__ = 'posts'
     id = db.Column(db.Integer, primary_key=True)
     body = db.Column(db.String, nullable=False)
-    user_id = db.Column(db.Integer, nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     created_at = db.Column(db.DateTime, server_default=db.func.now())
     updated_at = db.Column(
         db.DateTime, server_default=db.func.now(), server_onupdate=db.func.now())
+    view_count = db.Column(db.Integer, default=0)
+
+likes = db.Table('likes',
+db.Column('user_id', db.Integer, db.ForeignKey('users.id'), primary_key=True),
+db.Column('post_id', db.Integer, db.ForeignKey('posts.id'), primary_key=True)
+)
 
 
 class Comment(db.Model):
@@ -139,6 +147,8 @@ def create_post():
 def single_post(id):
     action = request.args.get('action')
     post = Post.query.get(id)
+    post.view_count += 1
+    db.session.commit()
     comments = Comment.query.filter_by(post_id=id).all()
     if not post:
         flash('Post not found', 'warning')
@@ -197,6 +207,18 @@ def edit_comment(id, comment_id):
             db.session.commit()
             return redirect(url_for('single_post', id = comment.post_id))
     return render_template('edit_comment.html', comment = comment)
+
+@app.route('/posts/<id>/like',methods=['POST'])
+def like(id):
+    post = Post.query.get(id)
+
+    if post in current_user.likes_posts:
+        current_user.likes_posts.remove(post)
+    else:
+        current_user.likes_posts.append(post)
+    db.session.commit()
+    return redirect(url_for('root'))
+
 
 if __name__ == "__main__":
     app.run(debug=True)
