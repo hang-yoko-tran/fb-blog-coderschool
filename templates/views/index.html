@@ -52,6 +52,18 @@
                     <button class='btn btn-link'>Delete <i class="fas fa-trash"></i></button>
                 </form>
             </div>
+            <div>
+              {% if post in current_user.likes_posts %}
+                <form method="POST" action="{{url_for('like', id=post.id)}}">
+                  <button type="submit" class="btn btn-warning">Unlike</button>              
+                </form>
+              {% else %}
+              <form method="POST" action="{{url_for('like', id=post.id)}}">
+                  <button type="submit" class="btn btn-warning">Like</button>              
+                </form>
+              {% endif %}
+              
+          </div>
         </div>
         {% else %}
       
